@@ -1,6 +1,7 @@
 const { port } = require("./config");
 const express = require("express");
 const app = express();
+require('./db')
 
 // Middlewares
 app.use(express.json());
