@@ -1,0 +1,30 @@
+{
+  "name": "banciss-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon src/index",
+    "start": "NODE_ENV=production node src/index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juansacok/banciss-api.git"
+  },
+  "keywords": [],
+  "author": "Juan Sebastián Agudelo @juansacok <juansac.me@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/juansacok/banciss-api/issues"
+  },
+  "homepage": "https://github.com/juansacok/banciss-api#readme",
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.11.13"
+  }
+}
