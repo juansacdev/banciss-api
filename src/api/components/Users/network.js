@@ -14,12 +14,10 @@ router.get("/", async (req, res) => {
 	} catch (error) {
 		response.error({
 			res,
-			data: error.message,
 			status,
 			error,
 		});
 	}
 });
 
-
-module.exports = router
+module.exports = router;

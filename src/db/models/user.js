@@ -22,15 +22,20 @@ const UserSchema = new Schema(
 			required: true,
 			match: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
 		},
-		image: String,
+		image: {
+			type: String,
+			default: "https://i.imgur.com/2ds4WjY.png",
+		},
 		cash: {
 			type: Number,
 			default: 0,
 		},
-		product: {
-			type: Schema.Types.ObjectId,
-			ref: "Product",
-		},
+		product: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Product",
+			},
+		],
 	},
 	{
 		versionKey: false,
