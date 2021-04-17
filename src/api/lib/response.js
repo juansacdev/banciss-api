@@ -1,5 +1,5 @@
 const success = ({ res, data, status }) => {
-	let statusCode = status || 200;
+	let statusCode = status;
 	let fullData = data || "";
 
 	res.status(statusCode).send({
@@ -8,14 +8,13 @@ const success = ({ res, data, status }) => {
 	});
 };
 
-const error = ({ res, status, error }) => {
+const error = ({ res, msg, status, error }) => {
 	console.error(`Response errror: ${error}`);
-	let statusCode = status || 500;
 
-	res.status(statusCode).send({
+	res.status(status).send({
 		error: {
-			statusCode,
-			message: "Internal Error",
+			statusCode: status,
+			message: msg,
 		},
 	});
 };
