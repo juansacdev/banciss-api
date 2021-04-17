@@ -5,12 +5,10 @@ const ProductSchema = new Schema(
 		name: {
 			type: String,
 			required: true,
-			match: /^[\w'\-,.][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{1,}$/,
 		},
 		description: {
 			type: String,
 			required: true,
-			match: /^[\w'\-,.][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{1,}$/,
 		},
 	},
 	{
