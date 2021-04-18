@@ -6,6 +6,17 @@ const ProductSchema = new Schema(
 			type: String,
 			required: true,
 		},
+		type: {
+			type: String,
+			require: true,
+			enum: [
+				"tarjeta de credito",
+				"tarjeta de debito",
+				"cuenta bancaria",
+				"hipoteca",
+				"seguros"
+			],
+		},
 		description: {
 			type: String,
 			required: true,

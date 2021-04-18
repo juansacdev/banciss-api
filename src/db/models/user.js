@@ -26,7 +26,7 @@ const UserSchema = new Schema(
 			type: Number,
 			default: 0,
 		},
-		product: [
+		products: [
 			{
 				type: Schema.Types.ObjectId,
 				ref: "Product",
