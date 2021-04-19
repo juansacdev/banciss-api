@@ -1,10 +1,38 @@
-const success = ({ res, data, status }) => {
-	let statusCode = status;
+const success = ({ res, msg, data, status }) => {
 	let fullData = data || "";
+	let message = msg || 'Todo OK'
 
-	res.status(statusCode).send({
-		statusCode,
+	res.status(status).send({
+		statusCode: status,
+		message,
 		data: fullData,
+	});
+};
+
+const token = ({ res, msg, token, status }) => {
+	let message = msg || 'Todo OK'
+
+	res.status(status).send({
+		statusCode: status,
+		message,
+		token,
+	});
+};
+
+const invalidToken = ({ res, msg, status }) => {
+	let message = msg || 'Invalid token'
+
+	res.status(status).send({
+		statusCode: status,
+		message,
+	});
+};
+
+const isNotAdmin = ({ res, msg, status }) => {
+
+	res.status(status).send({
+		statusCode: status,
+		message: msg,
 	});
 };
 
@@ -22,4 +50,7 @@ const error = ({ res, msg, status, error }) => {
 module.exports = {
 	success,
 	error,
+	token,
+	invalidToken,
+	isNotAdmin,
 };
