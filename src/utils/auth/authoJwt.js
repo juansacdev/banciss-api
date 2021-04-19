@@ -4,9 +4,9 @@ const jwt = require("jsonwebtoken");
 const Role = require("../../database/models/role");
 const User = require("../../database/models/user");
 
-const verifyToken = (req, res, next) => {
+const verifyToken = async (req, res, next) => {
 	try {
-		let token = req.headers.authorization;
+		const token = req.headers.authorization;
 
 		if (!token) {
 			return response.invalidToken({
@@ -18,6 +18,10 @@ const verifyToken = (req, res, next) => {
 
 		const decoded = jwt.verify(token, jwt_secret);
 		req.userId = decoded.id;
+
+		const user = await User.findById(decoded.id);
+		req.tokerForTwoAf = user.token
+
 		next();
 	} catch (error) {
 		if (error.message === "jwt expired") {

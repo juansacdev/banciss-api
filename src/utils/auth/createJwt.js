@@ -8,7 +8,7 @@ const createToken = (user) => {
 		},
 		jwt_secret,
 		{
-			expiresIn: "10m",
+			expiresIn: "100m",
 		},
 	);
 
