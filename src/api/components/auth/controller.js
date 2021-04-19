@@ -4,6 +4,13 @@ const {
 	signinUser,
 } = require('./store')
 
+const getSignin = () => {
+	return response.success({
+		res,
+		status: 200,
+	});
+}
+
 const signup = async (req, res) => {
     const {
 		name,
@@ -140,4 +147,5 @@ const signin = async (req, res) => {
 module.exports = {
     signup,
 	signin,
+	getSignin,
 }
