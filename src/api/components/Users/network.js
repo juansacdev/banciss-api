@@ -1,23 +1,17 @@
-const response = require("../../lib/response");
-const controller = require("./controller");
+const {
+	getUsers,
+	getUserById,
+	editUserById,
+	deleteUserById,
+} = require("./controller");
+const { verifyToken, isAdmin } = require("../../../utils/auth/authoJwt");
+const { verifyTokenTwoAf } = require("../../../utils/auth/twoAf");
 const { Router } = require("express");
 const router = Router();
 
-router.get("/", async (req, res) => {
-	try {
-		const data = await controller.getAll();
-		response.success({
-			res,
-			data,
-			status: 200,
-		});
-	} catch (error) {
-		response.error({
-			res,
-			status,
-			error,
-		});
-	}
-});
+router.get("/", getUsers);
+router.get("/:userId", getUserById);
+router.put("/edit/:userId", [verifyToken, verifyTokenTwoAf], editUserById);
+router.delete("/delete/:userId", [verifyToken, verifyTokenTwoAf, isAdmin], deleteUserById);
 
 module.exports = router;

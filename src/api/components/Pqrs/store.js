@@ -1,93 +1,17 @@
-const Pqr = require("../../../db/models/pqr");
+const Pqr = require("../../../database/models/pqr");
+const User = require("../../../database/models/user");
 
 const getAllPqrs = () => {
-	try {
-		return new Promise((resolve, reject) => {
-			Pqr.find()
-				.populate("user")
-				.exec((error, data) => {
-					if (error) {
-						reject(error);
-						return false;
-					}
-					resolve(data);
-				});
-		});
-	} catch (error) {
-		console.error(error);
-	}
-};
-
-const getOnePqrById = (pqrId) => {
-	try {
-		return new Promise((resolve, reject) => {
-			Pqr.findById(pqrId)
-				.populate("user")
-				.exec((error, data) => {
-					if (error) {
-						reject(error);
-						return false;
-					}
-					resolve(data);
-				});
-		});
-	} catch (error) {
-		console.error(error);
-	}
-};
-
-const getAllPqrsFromOneUserById = (userId) => {
-	try {
-		return new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
+		try {
 			Pqr.find()
 				.populate({
 					path: "user",
 					select: "_id name lastName email",
-					match: { _id: userId },
 				})
 				.exec((error, data) => {
 					if (error) {
-						reject(error);
-						return false;
-					}
-					resolve(data);
-				});
-		});
-	} catch (error) {
-		console.error(error);
-	}
-};
-
-const createOnePqr = async (pqrData) => {
-	try {
-		const pqrCreated = new Pqr(pqrData);
-		await pqrCreated.save();
-		return pqrCreated;
-	} catch (error) {
-		console.error(error);
-	}
-};
-
-const updatePqrById = (pqrId, pqrData) => {
-	return new Promise(async (resolve, reject) => {
-		try {
-			const pqrFound = Pqr.findById(pqrId);
-
-			if (!pqrFound) {
-				reject(null);
-			}
-
-			const pqrUpdated = await Pqr.findByIdAndUpdate(pqrId, pqrData, {
-				new: true,
-			});
-			await pqrUpdated.save();
-
-			Pqr.findById(pqrId)
-				.populate("user")
-				.exec((error, data) => {
-					if (error) {
-						reject(error);
-						return false;
+						return reject(error);
 					}
 					resolve(data);
 				});
@@ -97,13 +21,141 @@ const updatePqrById = (pqrId, pqrData) => {
 	});
 };
 
-const deletePqrById = (pqrId) => Pqr.findByIdAndDelete(pqrId)
+const getOnePqrById = (pqrId) => {
+	return new Promise((resolve, reject) => {
+		try {
+			const pqrFound = Pqr.findById(pqrId);
+
+			if (!pqrFound) {
+				return reject(null);
+			}
+
+			Pqr.findById(pqrId)
+				.populate({
+					path: "user",
+					select: "_id name lastName email",
+				})
+				.exec((error, data) => {
+					if (error) {
+						return reject(error);
+					}
+					resolve(data);
+				});
+		} catch (error) {
+			console.error(error);
+		}
+	});
+};
+
+const createOnePqr = (pqrData) => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			// Crea PQR
+			const pqrCreated = new Pqr(pqrData);
+
+			await pqrCreated.save();
+
+			// Se agrega Pqr al User que lo creo
+			const { _id: pqrId } = pqrCreated;
+			const { user: userId } = pqrData;
+
+			const userUpdated = await User.findByIdAndUpdate(
+				userId,
+				{
+					$addToSet: {
+						pqrs: pqrId,
+					},
+				},
+				{ new: true },
+			);
+			await userUpdated.save();
+
+			// Resuelve con el pqr creado
+			Pqr.findById(pqrId)
+				.populate({
+					path: "user",
+					select: "_id name lastName email",
+				})
+				.exec((error, data) => {
+					if (error) {
+						return reject(error);
+					}
+					resolve(data);
+				});
+		} catch (error) {
+			console.error(error);
+		}
+	});
+};
+
+const updatePqrById = (pqrId, pqrData) => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			const pqrUpdated = await Pqr.findByIdAndUpdate(pqrId, pqrData, {
+				new: true,
+			});
+
+			if (!pqrUpdated) {
+				return reject(null);
+			}
+
+			await pqrUpdated.save();
+
+			Pqr.findById(pqrId)
+				.populate({
+					path: "user",
+					select: "_id name lastName email",
+				})
+				.exec((error, data) => {
+					if (error) {
+						return reject(error);
+					}
+					resolve(data);
+				});
+		} catch (error) {
+			console.error(error);
+		}
+	});
+};
+
+const deleteOnePqrById = async (pqrId, userId) => {
+	try {
+		const pqrFound = Pqr.findById(pqrId);
+
+		if (!pqrFound) {
+			return null;
+		}
+
+		// Elimino la data que este asociada a este pqr
+		const userUpdated = await User.findByIdAndUpdate(
+			userId,
+			{
+				$pull: {
+					pqrs: pqrId,
+				},
+			},
+			{
+				new: true,
+			},
+		);
+
+		await userUpdated.save();
+		const pqrFoundAndDeleted = Pqr.findByIdAndDelete(pqrId);
+
+		if (!pqrFoundAndDeleted) {
+			return null;
+		}
+
+		return pqrFoundAndDeleted;
+	} catch (error) {
+		console.error(error);
+	}
+};
 
 module.exports = {
 	getAllPqrs,
 	getOnePqrById,
-	getAllPqrsFromOneUserById,
 	createOnePqr,
 	updatePqrById,
-	deletePqrById,
+	deleteOnePqrById,
 };

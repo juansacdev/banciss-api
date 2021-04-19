@@ -2,9 +2,9 @@ const response = require("../../lib/response");
 const {
 	getAllPqrs,
 	getOnePqrById,
-	getAllPqrsFromOneUserById,
     createOnePqr,
 	updatePqrById,
+	deleteOnePqrById,
 } = require('./store')
 
 const getPqrs = async (req, res) => {
@@ -29,25 +29,16 @@ const getPqrById = async (req, res) => {
     const { pqrId } = req.params
 	try {
 		const data = await getOnePqrById(pqrId);
-		return response.success({
-			res,
-			data,
-			status: 200,
-		});
-	} catch (error) {
-		return response.error({
-			res,
-			msg: "Internal error",
-			status: 500,
-			error,
-		});
-	}
-}
 
-const getPqrsByUserId = async (req, res) => {
-    const { userId } = req.params
-	try {
-		const data = await getAllPqrsFromOneUserById(userId);
+		if (!data) {
+			return response.error({
+				res,
+				msg: "El pqr no existe",
+				status: 404,
+				error: `Se intento obtener un pqr que no existe`,
+			});
+		}
+
 		return response.success({
 			res,
 			data,
@@ -69,7 +60,7 @@ const createPqr = async (req, res) => {
 		description,
 	} = req.body;
 
-	const userId = req.user.id
+	const userId = req.userId
 
 	if (!title || !description) {
 		return response.error({
@@ -88,13 +79,12 @@ const createPqr = async (req, res) => {
 
 	try {
 		const data = await createOnePqr(pqrData);
-
 		return response.success({
 			res,
 			data,
+			msg: 'Pqr creado con exito!',
 			status: 201,
 		});
-
 	} catch (error) {
 		return response.error({
 			res,
@@ -120,38 +110,18 @@ const editPqrById = async (req, res) => {
 		const { pqrId } = req.params
 		const data = await updatePqrById(pqrId, pqrData)
 
-		if (data) {
-			return response.success({
+		if (!data) {
+			return response.error({
 				res,
-				data,
-				status: 200,
+				msg: "Este pqr no existe",
+				status: 404,
+				error: `Se intento actualizar un pqr que no existe`,
 			});
 		}
 
-		return response.error({
-			res,
-			msg: "Este PQR no existe",
-			status: 404,
-			error: 'Se intento actualizar un PQR que no existe',
-		});
-
-	} catch (error) {
-		return response.error({
-			res,
-			msg: "Internal Error",
-			status: 500,
-			error,
-		});
-	}
-}
-
-const deletePqrById = async (req, res) => {
-	const { pqrId } = req.params
-	try {
-		const data = await deleteOnePqrById(pqrId)
-
 		return response.success({
 			res,
+			msg: 'Pqr actualizado con exito!',
 			data,
 			status: 200,
 		});
@@ -166,11 +136,41 @@ const deletePqrById = async (req, res) => {
 	}
 }
 
+const deletePqrById = async (req, res) => {
+	const { pqrId } = req.params
+	const userId = req.userId
+	try {
+		const data = await deleteOnePqrById(pqrId, userId)
+
+		if (!data) {
+			return response.error({
+				res,
+				msg: "El pqr no existe",
+				status: 404,
+				error: `Se intento eliminar un pqr que no existe`,
+			});
+		}
+
+		return response.success({
+			res,
+			data,
+			msg:'Pqr Eliminado con exito!',
+			status: 200,
+		});
+
+	} catch (error) {
+		return response.error({
+			res,
+			msg: "Internal Error",
+			status: 500,
+			error,
+		});
+	}
+}
 
 module.exports = {
     getPqrs,
 	getPqrById,
-	getPqrsByUserId,
     createPqr,
 	editPqrById,
 	deletePqrById,
