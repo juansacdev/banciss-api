@@ -13,7 +13,6 @@ const routes = server => {
     server.use('/api/pqrs', pqr)
     server.use('/api/auth', auth)
     server.use('/api/doc', swaggerUi.serve,  swaggerUi.setup(swaggerDoc))
-    server.use('/', public)
 }
 
 module.exports = routes
