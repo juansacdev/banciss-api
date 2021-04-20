@@ -2,14 +2,8 @@ const response = require("../../lib/response");
 const {
     registerUser,
 	signinUser,
+	validateToken,
 } = require('./store')
-
-const getSignin = () => {
-	return response.success({
-		res,
-		status: 200,
-	});
-}
 
 const signup = async (req, res) => {
     const {
@@ -59,10 +53,9 @@ const signup = async (req, res) => {
 			});
 		}
 
-		return response.token({
+		return response.success({
 			res,
-			token: data,
-			msg: 'First Authentication',
+			data,
 			status: 201,
 		});
 
@@ -97,9 +90,9 @@ const signin = async (req, res) => {
 	};
 
 	try {
-		const data = await signinUser(userData);
+		const tokenForTwoAf = await signinUser(userData);
 
-		const { emailNotFound, passwordNotMach, tokenNotMatch } = data
+		const { emailNotFound, passwordNotMach } = tokenForTwoAf
 
 		if (emailNotFound) {
 			return response.error({
@@ -119,18 +112,15 @@ const signin = async (req, res) => {
 			});
 		}
 
-		if (tokenNotMatch) {
-			return response.invalidToken({
-				res,
-				msg: "User Unauthorized",
-				status: 403,
-			});
+		const data = {
+			userEmail: email,
+			token: tokenForTwoAf,
 		}
 
-		return response.token({
+		return response.success({
 			res,
-			token: data,
-			msg: 'expire in 10 minutes!',
+			data,
+			msg: 'Revisa tu email, se te envio un código de verificación',
 			status: 200,
 		});
 
@@ -144,8 +134,66 @@ const signin = async (req, res) => {
 	}
 }
 
+const twoAf = async (req, res) => {
+	const { useremail: userEmail, authorization: userToken } = req.headers
+	const { code: userCode } = req.body
+
+	if (!userToken || !userEmail) {
+		return response.invalidToken({
+			res,
+			msg: "Not token provided",
+			status: 403,
+		});
+	}
+
+	const tokenData = {
+		userToken,
+		userEmail,
+		userCode,
+	}
+
+	try {
+		const data = await validateToken(tokenData);
+
+		const { emailNotFound, tokenNotMach, tokenExpired } = data
+
+		if (emailNotFound) {
+			return response.error({
+				res,
+				msg: "El email no esta registrado o es incorrecto",
+				status: 404,
+				error: `Email no esta en la db`,
+			});
+		}
+
+		if (tokenNotMach) {
+			return response.error({
+				res,
+				msg: "El codigo es incorrecto o expiro",
+				status: 404,
+				error: `Se ingresa un codigo que no hace match con el token o expiro`,
+			});
+		}
+
+		return response.token({
+			res,
+			token: data,
+			status: 200,
+		});
+
+	} catch (error) {
+		return response.error({
+			res,
+			msg: "Internal Error",
+			status: 500,
+			error,
+		});
+	}
+
+}
+
 module.exports = {
     signup,
 	signin,
-	getSignin,
+	twoAf,
 }

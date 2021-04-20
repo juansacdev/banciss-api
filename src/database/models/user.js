@@ -26,7 +26,6 @@ const UserSchema = new Schema(
 			type: Number,
 			default: 0,
 		},
-		token: String,
 		products: [
 			{
 				type: Schema.Types.ObjectId,

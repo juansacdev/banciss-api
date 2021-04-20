@@ -18,9 +18,7 @@ const verifyToken = async (req, res, next) => {
 
 		const decoded = jwt.verify(token, jwt_secret);
 		req.userId = decoded.id;
-
-		const user = await User.findById(decoded.id);
-		req.tokerForTwoAf = user.token
+		req.userEmail = decoded.email;
 
 		next();
 	} catch (error) {
@@ -53,7 +51,7 @@ const isAdmin = async (req, res, next) => {
 	const user = await User.findById(userId);
 	const roleUser = await Role.findOne({ _id: { $in: user.role }});
 
-    if (roleUser.name !== 'admin') {
+    if (roleUser.name !== 'Admin') {
         return response.isNotAdmin({
             res,
             msg: 'User unauthorized. Require Admin role',

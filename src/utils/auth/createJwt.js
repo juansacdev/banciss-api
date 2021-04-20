@@ -5,10 +5,11 @@ const createToken = (user) => {
 	const token = jwt.sign(
 		{
 			id: user._id,
+			email: user.email,
 		},
 		jwt_secret,
 		{
-			expiresIn: "10m",
+			expiresIn: "1h",
 		},
 	);
 

@@ -10,6 +10,7 @@ const {
 	validateTokenTwoAf,
 } = require("../../../utils/auth/twoAf");
 const { createToken } = require("../../../utils/auth/createJwt");
+const { emailSend } = require("../../../utils/auth/mailer");
 
 const registerUser = async (userData) => {
 	const {
@@ -27,16 +28,14 @@ const registerUser = async (userData) => {
 		const hash = await encryptPassword(userPassword);
 		userData.password = hash;
 
-		const twoAfToken = creteSecretTwoAf();
-		userData.token = twoAfToken;
-
 		const userCreated = new User(userData);
 
+		// Setting role. by default User
 		if (userRole) {
 			const foundRole = await Role.findOne({ name: { $in: userRole } });
 			userCreated.role = foundRole._id;
 		} else {
-			const defaultRole = await Role.findOne({ name: "user" });
+			const defaultRole = await Role.findOne({ name: "User" });
 			userCreated.role = defaultRole._id;
 		}
 
@@ -50,13 +49,12 @@ const registerUser = async (userData) => {
 const signinUser = async (userData) => {
 	const { email: userEmail, password: userPassword } = userData;
 	try {
-		const userFindInDB = await User.findOne({ email: userEmail });
-
-		let code = {
+		const code = {
 			emailNotFound: false,
 			passwordNotMach: false,
-			tokenNotMatch: false,
 		};
+
+		const userFindInDB = await User.findOne({ email: userEmail });
 
 		if (!userFindInDB) {
 			code.emailNotFound = true;
@@ -73,19 +71,65 @@ const signinUser = async (userData) => {
 			return code;
 		}
 
-		const { token } = userFindInDB;
+		const tokenTwoAf = creteSecretTwoAf();
+		const tokenUserDecoded = decodedSecretForTwoAf(tokenTwoAf);
+		const is = validateTokenTwoAf(tokenTwoAf, tokenUserDecoded)
 
-		const tokenUserToDecode = decodedSecretForTwoAf(token);
+		const emailSentToUser = await emailSend({
+			code: tokenUserDecoded,
+			userEmail,
+		});
 
-		const tokenMatch = validateTokenTwoAf(token, tokenUserToDecode);
+		// !*********!
+		console.log({
+			emailSentToUser,
+			tokenEncrypt: tokenTwoAf,
+			tokenDecoded: tokenUserDecoded,
+			is
+		});
 
-		if (!tokenMatch) {
-			code.tokenNotMatch = true;
+		return tokenTwoAf;
+	} catch (error) {
+		console.error(error);
+	}
+};
+
+const validateToken = async (tokenData) => {
+	const { userToken, userEmail, userCode } = tokenData;
+	try {
+		const code = {
+			emailNotFound: false,
+			tokenNotMach: false,
+			tokenExpired: false,
+		};
+
+		const userFindInDB = await User.findOne({ email: userEmail });
+
+		if (!userFindInDB) {
+			code.emailNotFound = true;
 			return code;
 		}
 
-		const tokenLogin = createToken(userFindInDB);
-		return tokenLogin;
+		const tokenUserDecoded = decodedSecretForTwoAf(userToken);
+
+		// Valida si el encriptado contiene lo que se desencripto
+		const tokenMatch = validateTokenTwoAf(userToken, userCode);
+
+		console.log({
+			token:userToken,
+			userCode,
+			tokenUserDecoded,
+			tokenMatch,
+		})
+
+		if (tokenMatch) {
+			const token = createToken(userFindInDB);
+			return token;
+		}
+
+		code.tokenNotMach = true
+		return code
+
 	} catch (error) {
 		console.error(error);
 	}
@@ -94,4 +138,5 @@ const signinUser = async (userData) => {
 module.exports = {
 	registerUser,
 	signinUser,
+	validateToken,
 };

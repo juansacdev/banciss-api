@@ -20,45 +20,13 @@ const validateTokenTwoAf = (secret, token) => {
 		secret: secret,
 		encoding: "base32",
 		token,
+		window: 1,
 	});
 	return tokenValidates;
 };
-
-
-const verifyTokenTwoAf = async (req, res, next) => {
-
-	try {
-		const { tokerForTwoAf } = req
-
-		if (!tokerForTwoAf) {
-			return response.invalidToken({
-				res,
-				msg: "Not token provided for the two factor authtentication",
-				status: 403,
-			});
-		}
-
-		const tokenUserToDecode = decodedSecretForTwoAf(tokerForTwoAf)
-
-		const tokenMatch = validateTokenTwoAf(tokerForTwoAf, tokenUserToDecode)
-
-		if (!tokenMatch) {
-			return response.isNotAdmin({
-				res,
-				msg: 'User unauthorized',
-				status: 401,
-			});
-		}
-
-		next()
-	} catch (error) {
-		console.error(error);
-	}
-}
 
 module.exports = {
 	creteSecretTwoAf,
 	decodedSecretForTwoAf,
 	validateTokenTwoAf,
-	verifyTokenTwoAf,
 }
