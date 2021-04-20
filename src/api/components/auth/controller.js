@@ -155,7 +155,7 @@ const twoAf = async (req, res) => {
 	try {
 		const data = await validateToken(tokenData);
 
-		const { emailNotFound, tokenNotMach, tokenExpired } = data
+		const { emailNotFound, tokenNotMach } = data
 
 		if (emailNotFound) {
 			return response.error({

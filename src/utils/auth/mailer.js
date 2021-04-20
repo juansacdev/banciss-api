@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const { passwordEmail } = require('../../config')
+const { passwordEmail } = require("../../config");
 
 const emailSend = async ({ code, userEmail }) => {
 	const transport = nodemailer.createTransport({
@@ -15,10 +15,9 @@ const emailSend = async ({ code, userEmail }) => {
 	const send = await transport.sendMail({
 		from: '"Banciss Bank" <banciss.api@gmail.com>',
 		to: userEmail,
-		subject: "Código de autenticación",
+		subject: `Código de autenticación: ${code}`,
 		html: `
         <p>Este es tu código de verificacion. Por favor ingresa este código para poder ingresar a tu perfil bancario. 🙂</p>
-        <big><big><b>${code}</b></big></big>
         `,
 	});
 

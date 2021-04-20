@@ -91,7 +91,6 @@ const validateToken = async (tokenData) => {
 		const code = {
 			emailNotFound: false,
 			tokenNotMach: false,
-			tokenExpired: false,
 		};
 
 		const userFindInDB = await User.findOne({ email: userEmail });
