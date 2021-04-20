@@ -1,5 +1,4 @@
 const speakeasy = require("speakeasy");
-const response = require("../../api/lib/response");
 
 const creteSecretTwoAf = () => {
 	const secretBase32 = speakeasy.generateSecret();

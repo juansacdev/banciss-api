@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const { passwordEmail } = require('../../config')
 
 const emailSend = async ({ code, userEmail }) => {
 	const transport = nodemailer.createTransport({
@@ -7,7 +8,7 @@ const emailSend = async ({ code, userEmail }) => {
 		secure: true,
 		auth: {
 			user: "banciss.api@gmail.com",
-			pass: "cpvdatxuepbpfdxp",
+			pass: passwordEmail,
 		},
 	});
 

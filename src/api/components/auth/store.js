@@ -73,19 +73,10 @@ const signinUser = async (userData) => {
 
 		const tokenTwoAf = creteSecretTwoAf();
 		const tokenUserDecoded = decodedSecretForTwoAf(tokenTwoAf);
-		const is = validateTokenTwoAf(tokenTwoAf, tokenUserDecoded)
 
-		const emailSentToUser = await emailSend({
+		await emailSend({
 			code: tokenUserDecoded,
 			userEmail,
-		});
-
-		// !*********!
-		console.log({
-			emailSentToUser,
-			tokenEncrypt: tokenTwoAf,
-			tokenDecoded: tokenUserDecoded,
-			is
 		});
 
 		return tokenTwoAf;
@@ -110,17 +101,8 @@ const validateToken = async (tokenData) => {
 			return code;
 		}
 
-		const tokenUserDecoded = decodedSecretForTwoAf(userToken);
-
 		// Valida si el encriptado contiene lo que se desencripto
 		const tokenMatch = validateTokenTwoAf(userToken, userCode);
-
-		console.log({
-			token:userToken,
-			userCode,
-			tokenUserDecoded,
-			tokenMatch,
-		})
 
 		if (tokenMatch) {
 			const token = createToken(userFindInDB);
