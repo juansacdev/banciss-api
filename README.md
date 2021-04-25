@@ -25,16 +25,16 @@
 npm install
 ```
 
-## Usage
+## Usage - Production
 
 ```sh
 npm run start
 ```
 
-## Run tests
+## Usage - Dev
 
 ```sh
-npm run test
+npm run dev
 ```
 
 ## Author
@@ -58,6 +58,3 @@ Give a ⭐️ if this project helped you!
 
 Copyright © 2021 [Juan Sebastián Agudelo @juansacok <juansac.me@gmail.com>](https://github.com/juansacok).<br />
 This project is [ISC](https://github.com/juansacok/banciss-api/blob/master/LICENSE) licensed.
-
-***
-_This README was generated with ❤️ by [readme-md-generator](https://github.com/kefranabg/readme-md-generator)_
