@@ -28,7 +28,7 @@ npm install
 ## Usage - Production
 
 ```sh
-npm run start
+npm start
 ```
 
 ## Usage - Dev
@@ -36,6 +36,10 @@ npm run start
 ```sh
 npm run dev
 ```
+
+## More dumentation 📝
+
+* Notion: [Banciss API Documentation](https://www.notion.so/Documentaci-n-de-la-REST-API-1438e62353b646efa3e688b3e35c7df7)
 
 ## Author
 
