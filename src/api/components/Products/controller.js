@@ -95,6 +95,7 @@ const createProduct = async (req, res) => {
 		return response.success({
 			res,
 			data,
+			msg: 'Producto creado con exito!',
 			status: 201,
 		});
 	} catch (error) {

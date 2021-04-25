@@ -97,7 +97,7 @@ const deleteTransactionById = async (req, res) => {
 		return response.success({
 			res,
 			data,
-			msg:'Producto eliminado con exito!',
+			msg:'Transaccion eliminada con exito!',
 			status: 200,
 		});
 
